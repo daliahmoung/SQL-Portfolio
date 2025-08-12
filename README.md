@@ -1,4 +1,4 @@
-# Countries Economic Data Analysis - SQL Portfolio
+# Country Economic Data Analysis - SQL Portfolio
 ## Overview
 SQL Based analysis of global economic and education data
 
