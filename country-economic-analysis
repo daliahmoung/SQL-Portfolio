@@ -1,0 +1,68 @@
+CREATE TABLE country_data (
+    country VARCHAR(100) PRIMARY KEY,
+    literacy_rate DECIMAL(5,2),
+    physician_density DECIMAL(5,2),
+    gdp_current_usd BIGINT,
+    gdp_growth_annual DECIMAL(8,6),
+    gdp_per_capita DECIMAL(12,2),
+    gdp_per_capita_category VARCHAR(20),
+    unemployment_rate DECIMAL(5,3),
+    continent VARCHAR(20)
+);
+
+SELECT *
+FROM country_data;
+
+-- QUERY 1: Global Economic Overview by Continent
+SELECT 
+-- Analyzes economic perfomorance across global regions
+    continent,
+    COUNT(*) as country_count,
+    ROUND(AVG(gdp_per_capita), 2) as avg_gdp_per_capita,
+    ROUND(AVG(unemployment_rate), 2) as avg_unemployment,
+    ROUND(AVG(literacy_rate), 1) as avg_literacy_rate,
+    ROUND(SUM(gdp_current_usd)/1000000000000, 2) as total_gdp_trillions
+FROM country_data 
+GROUP BY continent
+ORDER BY avg_gdp_per_capita DESC;
+
+-- Query 2: Education vs Economic Performance Analysis
+-- Examines the relationship between education levels (literacy rate) and economic performance
+SELECT 
+    CASE 
+        WHEN literacy_rate >= 95 THEN 'High Literacy (95%+)'
+        WHEN literacy_rate >= 80 THEN 'Medium Literacy (80-94%)'
+        ELSE 'Low Literacy (<80%)'
+    END as literacy_category,
+    COUNT(*) as country_count,
+    ROUND(AVG(gdp_per_capita), 2) as avg_gdp_per_capita,
+    ROUND(AVG(unemployment_rate), 2) as avg_unemployment,
+    ROUND(AVG(physician_density), 2) as avg_physician_density
+FROM country_data 
+GROUP BY literacy_category
+ORDER BY avg_gdp_per_capita DESC;
+
+-- Query 3: Top Performers by Multiple Metrics
+-- Rank markets using a composite score I created, with indocators available in data
+SELECT 
+    country,
+    continent,
+    gdp_per_capita,
+    literacy_rate,
+    unemployment_rate,
+    physician_density,
+    ROUND(
+        (literacy_rate * 0.3) + 
+        (physician_density * 10) + 
+        ((10 - unemployment_rate) * 2) + 
+        (CASE 
+            WHEN gdp_per_capita > 50000 THEN 50
+            WHEN gdp_per_capita > 20000 THEN 30
+            WHEN gdp_per_capita > 10000 THEN 20
+            ELSE 10
+        END), 2) as performance_score
+FROM country_data 
+WHERE literacy_rate > 90 
+    AND unemployment_rate < 8
+    AND physician_density > 2.0
+ORDER BY performance_score DESC;
