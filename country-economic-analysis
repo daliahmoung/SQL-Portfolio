@@ -43,7 +43,7 @@ GROUP BY literacy_category
 ORDER BY avg_gdp_per_capita DESC;
 
 -- Query 3: Top Performers by Multiple Metrics
--- Rank markets using a composite score I created, with indocators available in data
+-- Rank markets using a composite score I created, with indicators available in data
 SELECT 
     country,
     continent,
